@@ -1,14 +1,31 @@
-expose:
-  Args: 
-    - --v
-    - 4
-  Annotations:
-    helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: hook-succeeded
-
+PipelineSecrets: {}
 cleanup:
-  Args: 
-    - --cleanup
   Annotations:
     helm.sh/hook: pre-delete
     helm.sh/hook-delete-policy: hook-succeeded
+  Args:
+  - --cleanup
+controllerbuild:
+  enabled: true
+expose:
+  Annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+  Args:
+  - --v
+  - 4
+  config:
+    domain: cd.jenkins-x.io
+    exposer: Ingress
+    http: "false"
+    tlsacme: "true"
+jenkins:
+  Servers:
+    GHE:
+    - Name: GHE
+      Url: https://github.beescloud.com/api/v3/
+    Global:
+      EnvVars:
+        TILLER_NAMESPACE: kube-system
+  enabled: false
+prow: {}
